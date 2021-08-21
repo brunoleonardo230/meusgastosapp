@@ -48,7 +48,7 @@ class ExpenseEdit extends Component
             'description' => $this->description,
             'amount'      => $this->amount,
             'type'        => $this->type,
-            'photo'       => $this->photo
+            'photo'       => $this->photo ?? $this->expense->photo
         ]);
 
         session()->flash('message', 'Registro atualizado com sucesso!');
