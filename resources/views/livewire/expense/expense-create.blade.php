@@ -49,6 +49,9 @@
                 <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Foto Comprovante</label>
                 <input type="file" name="amount" wire:model="photo"
                        class="block appearance-none w-full bg-gray-200 border @error('photo') border-red-500 @else border-gray-200 @enderror  text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500">
+                @if($photo)
+                    <img src="{{$photo->temporaryUrl()}}" alt="" width="150px" class="my-3">
+                @endif
 
             @error('photo')
             <h5 class="text-red-500 text-xs italic">{{$message}}</h5>
