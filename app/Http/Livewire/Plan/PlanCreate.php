@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Plan;
 
+use App\Services\PagSeguro\Plan\PlanCreateService;
 use Livewire\Component;
 use \App\Models\Plan;
 
@@ -13,8 +14,7 @@ class PlanCreate extends Component
         'plan.name' => 'required',
         'plan.description' => 'required',
         'plan.price' => 'required',
-        'plan.slug' => 'required',
-        'plan.reference' => 'required',
+        'plan.slug' => 'required'
     ];
 
     public function createPlan()
@@ -22,9 +22,14 @@ class PlanCreate extends Component
         $this->validate();
 
         $plan = $this->plan;
-        $plan['reference'] = 'PAGSEGURO-REFERENCE';
+
+        $planPagSeguroReference = (new PlanCreateService())->makeRequest($plan);
+
+        $plan['reference'] = $planPagSeguroReference;
 
         PLan::create($plan);
+
+        $this->plan = [];
 
         session()->flash('message', 'Plano criado com sucesso');
     }
