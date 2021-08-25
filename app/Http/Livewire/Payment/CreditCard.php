@@ -35,15 +35,17 @@ class CreditCard extends Component
         $makeSubscription = (new SubscriptionService($data))->makeSubscription();
 
         $user = auth()->user();
-        
+
         $user->plan()->create([
             'plan_id' => $this->plan->id,
             'status' => $makeSubscription['status'],
-            'date_subscription' => (DateTime::createFromFormat(DATE_ATOM, $makeSubscription['date']))->format('Y-m-d H:i:s'),
+            'date_subscription' => (\DateTime::createFromFormat(DATE_ATOM, $makeSubscription['date']))->format('Y-m-d H:i:s'),
             'reference_transaction' => $makeSubscription['code'],
         ]);
 
         session()->flash('message', 'Plano Aderido com sucesso');
+
+        $this->emit('subscriptionFinished');
     }
 
     public function render()

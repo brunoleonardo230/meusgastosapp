@@ -75,6 +75,10 @@
                     }
                 },
                 cardToken(e) {
+                    let button = e.target;
+                    button.disabled = true;
+                    button.classList.add('cursor-not-allowed', 'disabled:opacity-25');
+                    button.textContent = 'Carregando...';
 
                     let formEl = document.querySelector('form[name=creditCard]');
                     let formData = new FormData(formEl);
@@ -92,8 +96,12 @@
                             };
 
                             console.log(payload);
-
                             Livewire.emit('paymentData', payload);
+
+                            Livewire.on('subscriptionFinished', result =>  {
+                                formEl.reset();
+                                location.href = '{{route('dashboard')}}';
+                            });
                         }
                     });
                 }
