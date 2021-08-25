@@ -17,16 +17,15 @@ use \App\Http\Livewire\Expense\{
     ExpenseCreate,
     ExpenseEdit
 };
-use \App\Http\Livewire\Plan\{PlanCreate, PlanList};
+use \App\Http\Livewire\Plan\{PlanList, PlanCreate};
 
-use \Illuminate\Support\Facades\Storage;
-use \Illuminate\Support\Facades\File;
+use \Illuminate\Support\Facades\{File, Storage};
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
+Route::middleware(['auth:sanctum', 'verified', 'check.usersubscription'])->get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
 
@@ -35,29 +34,57 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function(){
     Route::prefix('expenses')->name('expenses.')->group(function(){
 
         Route::get('/', ExpenseList::class)->name('index');
-        Route::get('/create', ExpenseCreate::class)->name('create');
+
+        Route::get('/create', ExpenseCreate::class)
+            ->middleware('check.amountexpenses')
+            ->name('create');
+
         Route::get('/edit/{expense}', ExpenseEdit::class)->name('edit');
 
-        Route::get('/{expense}/photo', function ($expense) {
+        Route::get('/{expense}/photo', function($expense) {
             $expense = auth()->user()->expenses()->findOrFail($expense);
 
-            if (!Storage::disk('public')->exists($expense->photo))
+            if(!Storage::disk('public')->exists($expense->photo))
                 return abort(404, 'Image not found!');
 
             $image = Storage::disk('public')->get($expense->photo);
-            $mimeType = File::mimeType(storage_path('app/public/' . $expense->photo));
 
+            $mimeType = File::mimeType(storage_path('app/public/' . $expense->photo));
 
             return response($image)->header('Content-Type', $mimeType);
         })->name('photo');
-
     });
 
     Route::prefix('plans')->name('plans.')->group(function(){
+
         Route::get('/', PlanList::class)->name('index');
+
         Route::get('/create', PlanCreate::class)->name('create');
     });
 
 });
 
-Route::get('subscription/{plan:slug}', \App\Http\Livewire\Payment\CreditCard::class)->name('plan.subscription')->middleware('auth:sanctum');
+Route::prefix('subscription')->group(function(){
+
+    Route::get('/choosed/{plan}', function($plan) {
+        session()->put('choosed_plan', $plan);
+
+        return redirect()->route('plan.subscription', $plan);
+
+    })->name('choosed.plan');
+
+    Route::get('/{plan:slug}', \App\Http\Livewire\Payment\CreditCard::class)
+        ->name('plan.subscription')
+        ->middleware('auth:sanctum');
+});
+
+
+Route::get('/notification', function() {
+//   $code = '99A43B3E27273A3EE4BF2F91542E7F1A';
+    $code = '9AA873A99ACF9ACF94DAA4B7CFB7AACDD985';
+    $sub = (new \App\Services\PagSeguro\Subscription\SubscriptionReaderService())->getSubscriptionByNotificationCode($code);
+
+    dd($sub);
+});
+
+Route::get('/clear-session', fn() => session()->flush());
