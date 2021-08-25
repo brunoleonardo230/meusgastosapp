@@ -10,7 +10,7 @@ class SubscriptionReaderService
     public function getSubscriptionByCode($subscriptionCode)
     {
         $url = Credentials::getCredentials('/pre-approvals/' . $subscriptionCode);
-dd($url);
+
         return $this->subscriptionReader($url);
     }
 

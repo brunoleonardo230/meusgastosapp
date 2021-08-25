@@ -46,7 +46,7 @@ class SubscriptionService
                     'documents' => [
                         [
                             'type' => 'CPF',
-                            'value' => '30100674020'
+                            'value' => '37599196420'
                         ]
                     ]
                 ],
@@ -60,7 +60,7 @@ class SubscriptionService
                             'documents' => [
                                 [
                                     'type' => 'CPF',
-                                    'value' => '30100674020'
+                                    'value' => '37599196420'
                                 ]
                             ],
                             'billingAddress' => [

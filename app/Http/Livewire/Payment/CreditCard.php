@@ -2,7 +2,7 @@
 
 namespace App\Http\Livewire\Payment;
 
-use App\Models\{User, Plan};
+use App\Models\{Plan, User};
 use App\Services\PagSeguro\Credentials;
 use App\Services\PagSeguro\Subscription\SubscriptionService;
 use Faker\Provider\DateTime;
@@ -31,19 +31,20 @@ class CreditCard extends Component
     public function proccessSubscription($data)
     {
         $data['plan_reference'] = $this->plan->reference;
-
         $makeSubscription = (new SubscriptionService($data))->makeSubscription();
 
         $user = auth()->user();
 
         $user->plan()->create([
             'plan_id' => $this->plan->id,
-            'status' => $makeSubscription['status'],
+            'status'  => $makeSubscription['status'],
             'date_subscription' => (\DateTime::createFromFormat(DATE_ATOM, $makeSubscription['date']))->format('Y-m-d H:i:s'),
             'reference_transaction' => $makeSubscription['code'],
         ]);
 
-        session()->flash('message', 'Plano Aderido com sucesso');
+        session()->forget('choosed_plan');
+
+        session()->flash('message', 'Plano Aderido com Sucesso');
 
         $this->emit('subscriptionFinished');
     }

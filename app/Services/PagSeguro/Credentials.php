@@ -11,9 +11,8 @@ class Credentials
         $env   = config('pagseguro.env');
 
         $urlBase = $env == 'sandbox' ? 'https://ws.sandbox.pagseguro.uol.com.br' . $uri
-                                     : 'https://ws.pagseguro.uol.com.br' . $uri;
+            : 'https://ws.pagseguro.uol.com.br' . $uri;
 
-        return $urlBase.'?email='.$email.'&token='.$token;
-//        dd($data);
+        return "$urlBase?email={$email}&token={$token}";
     }
 }
