@@ -59,3 +59,5 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function(){
     });
 
 });
+
+Route::get('subscription/{plan:slug}', \App\Http\Livewire\Payment\CreditCard::class)->name('plan.subscription')->middleware('auth:sanctum');
